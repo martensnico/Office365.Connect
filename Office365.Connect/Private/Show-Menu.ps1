@@ -78,7 +78,6 @@ function ShowMenu ($steps)
 	printlogo
 	$i = 1
 	
-	$steps = InitializeSteps
 	foreach ($step in $steps) {
 		Write-Output ("[{0}] {1}. {2}" -f (GetCheckedValue $step[0]),$i,$step[1])
 		$i++

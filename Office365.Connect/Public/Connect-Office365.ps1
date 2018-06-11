@@ -39,6 +39,7 @@ When you use this switch parameter, you will be prompted for credentials when lo
 	#Need to do this because of "feature" explained here: https://github.com/Azure/azure-docs-powershell-azuread/issues/169
 	$Credential.password.MakeReadOnly()
 	$continue = $true
+	$steps = InitializeSteps
 
 	while ($continue) {
 
