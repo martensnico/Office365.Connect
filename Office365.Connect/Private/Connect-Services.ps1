@@ -68,10 +68,11 @@ function Connect-EXO
 	Write-Host ("Connecting Exchange Online") -Fore Yellow
 	try {
 		$exchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential $credential -Authentication "Basic" -AllowRedirection
-		Import-PSSession $exchangeSession | Out-Null
+		Import-Module (Import-PSSession $exchangeSession -AllowClobber) -Global | Out-Null
 		Write-Host ("Successfully connected to Exchange online") -Fore Green
+		WaitAnyKey
 	}
-	catch { Write-Host ("Could not connect to Exchange Online with MFA") -Fore Red }
+	catch { Write-Host ("Could not connect to Exchange Online with MFA") -Fore Red;WaitAnyKey }
 	}
 }
 
@@ -82,7 +83,7 @@ function Connect-S4B
 	Write-Host ("Connecting Skype for Business Online with MFA") -Fore Yellow
 	try {
 		$sfboSession = New-CsOnlineSession -UserName $credential.UserName
-		Import-PSSession $sfboSession | Out-Null
+		Import-Module (Import-PSSession $sfboSession) -Global | Out-Null
 		Write-Host ("Successfully connected to Skype for Business Online with MFA") -Fore Green
 	}
 	catch { Write-Host ("Could not connect to Skype for Business Online with MFA") -Fore Red }
@@ -93,7 +94,7 @@ function Connect-S4B
 	Write-Host ("Connecting Skype for Business Online") -Fore Yellow
 	try {
 		$sfboSession = New-CsOnlineSession -Credential $credential
-		Import-PSSession $sfboSession | Out-Null
+		Import-Module (Import-PSSession $sfboSession) -Global | Out-Null
 		Write-Host ("Successfully connected to Skype for Business Online") -Fore Green
 	}
 	catch { Write-Host ("Could not connect to Skype for Business Online") -Fore Red }
