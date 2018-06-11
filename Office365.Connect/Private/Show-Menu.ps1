@@ -30,13 +30,13 @@ function RunSteps ($steps)
 	if ($steps[7][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-PNP}
 }
 
-function WaitAnyKey ()
+function WaitAnyKey
 {
 	$HOST.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 	$HOST.UI.RawUI.Flushinputbuffer()
 }
 
-function printlogo ()
+function printlogo
 {
 	Write-Output ("_________                                     __    ________   _____  _____.__             ________   ________.________")
 	Write-Output ("\_   ___ \  ____   ____   ____   ____   _____/  |_  \_____  \_/ ____\/ ____\__| ____  ____ \_____  \ /  _____/|   ____/")

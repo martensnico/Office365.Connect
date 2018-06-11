@@ -1,4 +1,3 @@
-
 function Get-Prerequisite
 {
 	$modules = "CredentialManager","AzureAD","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell","SkypeOnlineConnector"

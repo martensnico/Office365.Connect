@@ -1,4 +1,4 @@
-function Connect-Office365 ()
+function Connect-Office365
 {
 <#
 .SYNOPSIS
