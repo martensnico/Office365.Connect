@@ -34,7 +34,7 @@ When you use this switch parameter, you will be prompted for credentials when lo
 	)
 
 	Clear-Host
-	Get-Prerequisite
+	Get-Prerequisite 
 	$credential = Get-ManagedCredential $Tenant
 	#Need to do this because of "feature" explained here: https://github.com/Azure/azure-docs-powershell-azuread/issues/169
 	$Credential.password.MakeReadOnly()
