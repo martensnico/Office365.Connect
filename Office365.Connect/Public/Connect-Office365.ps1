@@ -47,7 +47,8 @@ When you use this switch parameter, you will be prompted for credentials when lo
 
 		Write-Host ("")
 		Write-Host ("Select option (q to quit, c to clear selections, Enter to run.):")
-		Write-Host ("`nUsing account: $($credential.UserName)") -Fore "Yellow"
+		Write-Host ("")
+		Write-Host ("Using account: $($credential.UserName)") -Fore "Yellow"
 		$userInput = [System.Console]::ReadKey()
 
 		switch ($userInput.key)
