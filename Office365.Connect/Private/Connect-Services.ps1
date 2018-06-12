@@ -8,7 +8,11 @@ function Connect-AAD
 			Connect-AzureAD -AccountID $credential.userName | Out-Null
 			Write-Host ("Successfully connected to Azure Active Directory with MFA") -Fore Green
 		}
-		catch { Write-Host ("Could not connect to Azure Active Directory with MFA") }
+		catch { 
+			Write-Host ($_.Exception.Message)
+			Write-Host ("Could not connect to Azure Active Directory with MFA") 
+			WaitAnyKey
+		}
 	}
 	if (!$MFA)
 	{
