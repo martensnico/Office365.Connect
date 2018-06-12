@@ -39,6 +39,7 @@ function Disconnect-S4B
 {
     $s4bSession =  Get-PSSession | Where-Object{$_.ComputerName -like "*.online.lync.com"} 
     if($s4bSession){$s4bSession | Remove-PSSession; Write-Host("Skype for Business - Disconnected") -Fore Green}
+    else{Write-Host("Skype for Business - No active Skype for Business sesssions found") -Fore Yellow}
 }
 
 function Disconnect-MSTeams
@@ -57,10 +58,23 @@ function Disconnect-SandC
 {
     $sandcsession =  Get-PSSession | Where-Object{$_.ComputerName -like "*.compliance.protection.outlook.com"}
     if($sandcsession) { $sandcsession | Remove-PSSession; Write-Host("Disconnected Security & Compliance") -Fore Green}
-    else{Write-Host("Security & Compliance - No active Security & Compliance sessions found")}
+    else{Write-Host("Security & Compliance - No active Security & Compliance sessions found") -Fore Yellow}
 }
 
 function Disconnect-PNP
 {
-    Disconnect-PnPOnline
+    try{
+        Disconnect-PNPOnline -EA SilentlyContinue -ErrorVariable PNPError
+        Write-Host("PNP - Disconnected") -Fore Green
+    }
+    catch  {
+        if($PNPError.Message -eq "Object reference not set to an instance of an object."){
+        Write-Host "PNP - No active PNP Connections" -Fore Yellow
+        }
+        else
+        {
+            Write-Host "PNP - $($_.Exception.Message)" -Fore Yellow
+        }
+        
+    }
 }
