@@ -55,8 +55,18 @@ function Get-Prerequisite
 
 				foreach ($module in $missingmodules)
 				{
-					Write-Host ("Installing module $module") -Fore Yellow
-					Install-Module $module
+					if($module -eq "SkypeOnlineConnector")
+					{
+						Write-Host ("Unfortunately, the Skype for Business Online PowerShell module must be downloaded manually.") -Fore Red
+						Write-Host ("You can do this here:") -Fore Red
+						Write-Host ("https://www.microsoft.com/en-us/download/details.aspx?id=39366") -Fore Yellow
+						WaitAnyKey
+						exit
+					}
+					else{
+						Write-Host ("Installing module $module") -Fore Yellow
+						Install-Module $module
+					}
 				}
 			}
 			else {
