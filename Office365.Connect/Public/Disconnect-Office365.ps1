@@ -2,11 +2,19 @@ function Disconnect-Office365 ()
 {
 <#
 .SYNOPSIS
+Disconnects Office 365 sessions. You can specify which service you want to disconnect. 
 
 .DESCRIPTION
+Disconnects Office 365 sessions. You can specify which service you want to disconnect. 
+If you do not specify a specific service, all servies will be disconnected.
 
 .EXAMPLE
+Disconnect-Office365
+Disconnects PowerShell for all services
 
+.EXAMPLE
+Disconnect-Office365 -Skype -Teams
+Disconnects PowerShell for Skype for Business Online and Microsoft Teams
 #>
 [cmdletbinding()]
 	param(
