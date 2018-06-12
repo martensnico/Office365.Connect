@@ -11,4 +11,5 @@ function Get-ManagedCredential ($creds)
 		until
 		($credential)
 	}
+	return $credential
 }
