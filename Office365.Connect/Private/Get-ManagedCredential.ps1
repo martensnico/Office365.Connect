@@ -5,7 +5,7 @@ function Get-ManagedCredential ($creds)
 	else {
 		do
 		{
-			Write-Host("You have to create a Windows Generic credential before proceeding, read more about how to use it here:") -Fore Red
+			Write-Host("You have to create a Windows Generic credential before proceeding, read more about how to use it here:") -Fore Yellow
 			Write-Host("https://sharepointrelated.com/2018/06/12/powershell-easy-secure-office365/") -Fore Yellow
 			Write-Host("")
 			$creds = Read-Host "Enter a valid Generic credential name"
