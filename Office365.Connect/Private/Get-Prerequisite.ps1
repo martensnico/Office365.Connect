@@ -48,6 +48,7 @@ function Get-Prerequisite
 		Write-Host ("Module AzureADPreview found") -Fore Green
 	}
 	else {
+		Write-Host ("Module AzureAD missing") -Fore Red
 		$missingmodules += "AzureAD"
 	}
 
@@ -69,6 +70,11 @@ function Get-Prerequisite
 				{
 						Install-Component $module				
 				}
+				Write-Host ""
+				Write-Host "We had to install some modules that require PowerShell to restart." -Fore Yellow
+				Write-Host "Please restart PowerShell and run Connect-Office365 again" -Fore Yellow
+				WaitAnyKey
+				exit
 			}
 		}
 		Clear-Host
@@ -123,6 +129,10 @@ function Install-Component($module)
 	{
 		"Signin"{Get-SigninAssistant}
 		"Microsoft.Online.SharePoint.PowerShell"{Get-SPOPowerShell}
-		default{Install-Module $module -Force}
+		default{
+			Write-Host "Installing module $module" -Fore Yellow
+			Install-Module $module -Force
+			Write-Host "Installed module $module" -Fore Green
+		}
 	}
 }

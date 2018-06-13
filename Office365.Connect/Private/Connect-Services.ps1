@@ -1,6 +1,5 @@
 function Connect-AAD
 {
-	Write-Host $($credential.UserName)
 	if ($MFA)
 	{
 		Write-Host ("Connecting Azure Active Directory with MFA") -Fore Yellow
