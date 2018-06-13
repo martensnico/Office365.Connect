@@ -29,14 +29,7 @@ function Get-Prerequisite
 		$missingmodules += "AzureAD"
 	}
 
-	#Check Skype for Business Module	
-	if(Test-Path "$env:ProgramFiles\Common Files\Skype for business Online\Modules")
-	{
-		Write-Host "Module SkypeforBusiness found" -Fore Green
-	}
-	else{$missingmodules += "SkypeOnlineConnector"; Write-Host("Module SkypeOnlineConnector missing") -Fore Red}
-
-	#Microsoft Online Services Sign-in Assistant for IT Professionals RTW
+		#Microsoft Online Services Sign-in Assistant for IT Professionals RTW
 	if ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") | Where-Object { $_.GetValue("DisplayName") -like "Microsoft Online Services Sign-in Assistant" })
 	{
 		Write-Host ("Microsoft Online Services Sign-in Assistant for IT Professionals RTW found") -Fore Green
@@ -63,10 +56,6 @@ function Get-Prerequisite
 			{
 				foreach ($module in $missingmodules)
 				{
-					if($module -eq "SkypeOnlineConnector")
-						{
-							#Get-S4BModule
-						}
 						if($module -eq "Signin")
 						{
 							Get-SigninAssistant
@@ -104,31 +93,5 @@ function Get-SigninAssistant
 	& $env:TEMP\$Filename /qn
 	Write-Host("Microsoft Online Services Sign-in Assistant for IT Professionals RTW has been installed") -Fore Green
 	$missingmodules.Remove("Signin")
-	}
-}
-
-function Get-S4BModule
-{
-	if(Get-CurrentPrivilege -eq $true)
-	{
-	Write-Host("Downloading Skype for Business Online Powershell module") -Fore Yellow
-	$URL = "https://download.microsoft.com/download/2/0/5/2050B39B-4DA5-48E0-B768-583533B42C3B/SkypeOnlinePowerShell.Exe"
-	$Filename = $URL.Split('/')[-1]
-	$file = "$env:TEMP\$Filename" 
-	Invoke-WebRequest -Uri $URL -UseBasicParsing -OutFile $file
-
-	Write-Host("Installing Skype for Business Online Powershell module") -Fore Yellow
-	Set-Location $env:TEMP
-	[string]$expression = ".\SkypeOnlinePowershell.exe /quiet /norestart /l* $env:TEMP\SkypeOnlinePowerShell.log"
-	Invoke-Expression $expression
-	Start-Sleep -Seconds 5
-	Do{
-$CheckForSfbO = Test-Path "$env:ProgramFiles\Common Files\Skype for business Online\Modules"
-Start-Sleep -Seconds 5
-$LoopError += 1
-}
-Until ($CheckForSfbO -eq $true -or $LoopError -eq 10)
-	Write-Host("Skype for Business Online Powershell module has been installed") -Fore Green
-	$missingmodules.Remove("SkypeOnlineConnector")
 	}
 }

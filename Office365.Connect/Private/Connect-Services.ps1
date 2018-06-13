@@ -81,8 +81,9 @@ function Connect-EXO
 }
 
 function Connect-S4B
-{
-	<#
+{	
+	if(Get-Module -ListAvailable -Name "SkypeOnlineConnector")
+	{
 	if ($MFA)
 	{
 	Write-Host ("Connecting Skype for Business Online with MFA") -Fore Yellow
@@ -90,20 +91,33 @@ function Connect-S4B
 		$sfboSession = New-CsOnlineSession -UserName $credential.UserName
 		Import-Module (Import-PSSession $sfboSession) -Global | Out-Null
 		Write-Host ("Successfully connected to Skype for Business Online with MFA") -Fore Green
+		}
+		catch {
+		Write-Host ("Could not connect to Skype for Business Online with MFA") -Fore Red
+		Write-Host ("Please try again after installing the Skype for Business Module. You can find it here:" ) -Fore Red
+		Write-Host ("https://download.microsoft.com/download/2/0/5/2050B39B-4DA5-48E0-B768-583533B42C3B/SkypeOnlinePowerShell.Exe") -Fore Yellow
+		WaitAnyKey 
+		}
 	}
-	catch { Write-Host ("Could not connect to Skype for Business Online with MFA") -Fore Red }
-	
-	}
+
 	if (!$MFA)
 	{
-	Write-Host ("Connecting Skype for Business Online") -Fore Yellow
-	try {
-		$sfboSession = New-CsOnlineSession -Credential $credential
-		Import-Module (Import-PSSession $sfboSession) -Global | Out-Null
-		Write-Host ("Successfully connected to Skype for Business Online") -Fore Green
+		Write-Host ("Connecting Skype for Business Online") -Fore Yellow
+		try {
+			$sfboSession = New-CsOnlineSession -Credential $credential
+			Import-Module (Import-PSSession $sfboSession) -Global | Out-Null
+			Write-Host ("Successfully connected to Skype for Business Online") -Fore Green
+		}
+		catch { 
+			Write-Host ("Could not connect to Skype for Business Online") -Fore Red
+			}
 	}
-	catch { Write-Host ("Could not connect to Skype for Business Online") -Fore Red }
-	}#>
+}
+else {
+	Write-Host ("Please try again after installing the Skype for Business Module. You can find it here:") -Fore Red
+	Write-Host ("https://download.microsoft.com/download/2/0/5/2050B39B-4DA5-48E0-B768-583533B42C3B/SkypeOnlinePowerShell.Exe") -Fore Yellow
+	WaitAnyKey
+}
 }
 
 function Connect-MSTeams
