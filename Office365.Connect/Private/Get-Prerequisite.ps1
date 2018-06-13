@@ -1,12 +1,11 @@
 function Get-Prerequisite
 {
-	$modules = "CredentialManager","AzureAD","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell","SkypeOnlineConnector"
+	$modules = "CredentialManager","AzureAD","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
 	$missingmodules = @()
-	[boolean]$state = 1
 
 	#Check modules
 	foreach ($module in $modules)
-	{
+	{	
 		if (Get-Module -ListAvailable -Name $module)
 		{
 			Write-Host ("Module $module found") -Fore Green
@@ -18,6 +17,13 @@ function Get-Prerequisite
 		}
 	}
 
+	#Check Skype for Business Module	
+	if(Test-Path "$env:ProgramFiles\Common Files\Skype for business Online\Modules")
+	{
+		Write-Host "Module SkypeforBusiness found"
+	}
+	else{$missingmodules += "SkypeOnlineConnector"; Write-Host("Module SkypeOnlineConnector missing") -Fore Red}
+
 	#Microsoft Online Services Sign-in Assistant for IT Professionals RTW
 	if ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") | Where-Object { $_.GetValue("DisplayName") -like "Microsoft Online Services Sign-in Assistant" })
 	{
@@ -26,33 +32,11 @@ function Get-Prerequisite
 	else
 	{
 		Write-Host ("Microsoft Online Services Sign-in Assistant for IT Professionals RTW missing") -Fore Red
-		$title = "Install Microsoft Online Services Sign-in Assistant for IT Professionals RTW?"
-		$message = "Do you want to download and install the Microsoft Online Services Sign-in Assistant for IT Professionals automatically?"
-		$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
-		$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
-		$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
-		$choice = $host.UI.PromptForChoice($title,$message,$options,1)
-
-		if($choice -eq 0)
-		{
-			Get-SigninAssistant
-		}
-		else{
-		Write-Host ("Microsoft Online Services Sign-in Assistant for IT Professionals RTW missing, please download here:") -Fore Red
-		Write-Host ("https://www.microsoft.com/en-us/download/details.aspx?id=28177") -Fore Yellow
-		$state = 0
-		}
+		$missingmodules += "Signin"
 	}
 
 	#If services is missing and modules
-	if ($state -eq 0 -and $missingmodules.count -eq 0)
-	{
-		Write-Host ("")
-		Write-Host ("") -Fore red
-		WaitAnyKey
-		exit
-	}
-	elseif ($missingmodules.count -ge 1)
+	if ($missingmodules.count -ge 1)
 	{
 		$title = "Install missing modules?"
 		$message = "Do you want to install missing modules now?"
@@ -68,13 +52,18 @@ function Get-Prerequisite
 				foreach ($module in $missingmodules)
 				{
 					if($module -eq "SkypeOnlineConnector")
-					{
-						Get-S4BModule
-					}
-					else{
+						{
+							Get-S4BModule
+						}
+						if($module -eq "Signin")
+						{
+							Get-SigninAssistant
+						}
+						else{
 						Write-Host ("Installing module $module") -Fore Yellow
-						Install-Module $module
+						Install-Module $module -Force
 					}
+						
 				}
 			}
 		}
@@ -122,5 +111,6 @@ function Get-S4BModule
 
 	. $file /S /v /qn
 	Write-Host("Skype for Business Online Powershell module has been installed") -Fore Green
+	Start-Sleep -Seconds 2
 	}
 }
