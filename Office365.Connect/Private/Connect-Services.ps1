@@ -82,6 +82,7 @@ function Connect-EXO
 
 function Connect-S4B
 {
+	<#
 	if ($MFA)
 	{
 	Write-Host ("Connecting Skype for Business Online with MFA") -Fore Yellow
@@ -102,7 +103,7 @@ function Connect-S4B
 		Write-Host ("Successfully connected to Skype for Business Online") -Fore Green
 	}
 	catch { Write-Host ("Could not connect to Skype for Business Online") -Fore Red }
-	}
+	}#>
 }
 
 function Connect-MSTeams

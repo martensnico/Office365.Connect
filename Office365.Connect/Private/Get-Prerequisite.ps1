@@ -65,7 +65,7 @@ function Get-Prerequisite
 				{
 					if($module -eq "SkypeOnlineConnector")
 						{
-							Get-S4BModule
+							#Get-S4BModule
 						}
 						if($module -eq "Signin")
 						{
@@ -74,8 +74,7 @@ function Get-Prerequisite
 						else{
 						Write-Host ("Installing module $module") -Fore Yellow
 						Install-Module $module -Force
-					}
-						
+					}						
 				}
 			}
 		}
