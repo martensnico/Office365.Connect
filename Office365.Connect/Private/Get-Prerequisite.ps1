@@ -1,7 +1,7 @@
 function Get-Prerequisite
 {
-	$modules = "CredentialManager","AzureAD","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
-	$missingmodules = @()
+	$modules = "CredentialManager","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
+	[System.Collections.ArrayList]$missingmodules = @()
 
 	#Check modules
 	foreach ($module in $modules)
@@ -17,10 +17,22 @@ function Get-Prerequisite
 		}
 	}
 
+	#Check Azure AD
+	if(Get-Module -ListAvailable -Name "AzureAD")
+	{
+		Write-Host ("Module AzureAD found") -Fore Green
+	}
+	elseif(Get-Module -ListAvailable -Name "AzureADPreview"){
+		Write-Host ("Module AzureADPreview found") -Fore Green
+	}
+	else {
+		$missingmodules += "AzureAD"
+	}
+
 	#Check Skype for Business Module	
 	if(Test-Path "$env:ProgramFiles\Common Files\Skype for business Online\Modules")
 	{
-		Write-Host "Module SkypeforBusiness found"
+		Write-Host "Module SkypeforBusiness found" -Fore Green
 	}
 	else{$missingmodules += "SkypeOnlineConnector"; Write-Host("Module SkypeOnlineConnector missing") -Fore Red}
 
@@ -76,8 +88,7 @@ function Get-Prerequisite
 function Get-CurrentPrivilege
 {
 	$privilege = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")
-	if($privilege -eq $true){Write-Host ("Current instance is running as administrator") -Fore Green}
-	else{Write-Host ("Please start PowerShell as administrator to install modules") -Fore Red; WaitAnyKey; exit}
+	if($privilege -eq $false){Write-Host ("Please start PowerShell as administrator to install modules") -Fore Red; WaitAnyKey; exit}
 	return $privilege
 }
 
@@ -93,6 +104,7 @@ function Get-SigninAssistant
 	Write-Host("Installing Microsoft Online Services Sign-in Assistant for IT Professionals RTW") -Fore Yellow
 	& $env:TEMP\$Filename /qn
 	Write-Host("Microsoft Online Services Sign-in Assistant for IT Professionals RTW has been installed") -Fore Green
+	$missingmodules.Remove("Signin")
 	}
 }
 
@@ -104,13 +116,20 @@ function Get-S4BModule
 	$URL = "https://download.microsoft.com/download/2/0/5/2050B39B-4DA5-48E0-B768-583533B42C3B/SkypeOnlinePowerShell.Exe"
 	$Filename = $URL.Split('/')[-1]
 	$file = "$env:TEMP\$Filename" 
-	Write-Host $file
 	Invoke-WebRequest -Uri $URL -UseBasicParsing -OutFile $file
 
 	Write-Host("Installing Skype for Business Online Powershell module") -Fore Yellow
-
-	. $file /S /v /qn
+	Set-Location $env:TEMP
+	[string]$expression = ".\SkypeOnlinePowershell.exe /quiet /norestart /l* $env:TEMP\SkypeOnlinePowerShell.log"
+	Invoke-Expression $expression
+	Start-Sleep -Seconds 5
+	Do{
+$CheckForSfbO = Test-Path "$env:ProgramFiles\Common Files\Skype for business Online\Modules"
+Start-Sleep -Seconds 5
+$LoopError += 1
+}
+Until ($CheckForSfbO -eq $true -or $LoopError -eq 10)
 	Write-Host("Skype for Business Online Powershell module has been installed") -Fore Green
-	Start-Sleep -Seconds 2
+	$missingmodules.Remove("SkypeOnlineConnector")
 	}
 }
