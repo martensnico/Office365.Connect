@@ -33,7 +33,9 @@ function RunSteps ($steps)
 	Write-Host ""
 	Write-Host "The following services have been connected:"
 	$stepstrue | Foreach-Object {Write-Host "- $_"}
+	WaitAnyKey
 
+	<#
 	$title = "Connections done"
 	$message = "Do you want to exit the menu and start working?"
 	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
@@ -42,8 +44,9 @@ function RunSteps ($steps)
 	$choice = $host.UI.PromptForChoice($title,$message,$options,0)
 	if($choice -eq 0)
 	{
-	exit
+	$continue = $false
 	}
+	#>
 }
 
 function WaitAnyKey

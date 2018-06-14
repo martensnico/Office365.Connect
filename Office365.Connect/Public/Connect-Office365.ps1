@@ -46,6 +46,7 @@ When you use this switch parameter, you will be prompted for credentials when lo
 		ShowMenu $steps
 
 		Write-Host ("")
+		Write-Host "If you are done connecting to the different services, hit `"q`"" -Fore 	Green
 		Write-Host ("Select option (q to quit, c to clear selections, Enter to run.):")
 		Write-Host ("")
 		Write-Host ("Using account: $($credential.UserName)") -Fore "Yellow"
