@@ -2,27 +2,25 @@ function Get-Prerequisite
 {
 	$modules = "CredentialManager","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline"
 	[System.Collections.ArrayList]$missingmodules = @()
-
+	[System.Collections.ArrayList]$availablemodules = @()
 	#Microsoft Online Services Sign-in Assistant for IT Professionals RTW
 	if ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") | Where-Object { $_.GetValue("DisplayName") -like "Microsoft Online Services Sign-in Assistant" })
 	{
-		Write-Host ("Microsoft Online Services Sign-in Assistant for IT Professionals RTW found") -Fore Green
+		$availablemodules += "Microsoft Online Services Sign-in Assistant for IT Professionals RTW"
 	}
 	else
 	{
-		Write-Host ("Microsoft Online Services Sign-in Assistant for IT Professionals RTW missing") -Fore Red
-		$missingmodules += "Signin"
+		$missingmodules += "Microsoft Online Services Sign-in Assistant for IT Professionals RTW"
 	}
 
 	#SharePoint Online Management Shell
 	if ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") | Where-Object { $_.GetValue("DisplayName") -like "SharePoint Online Management Shell" })
 	{
-		Write-Host ("SharePoint Online Management Shell found") -Fore Green
+		$availablemodules += "SharePoint Online Management Shell"
 	}
 	else
 	{
-		Write-Host ("SharePoint Online Management Shell missing") -Fore Red
-		$missingmodules += "Microsoft.Online.SharePoint.PowerShell"
+		$missingmodules += "SharePoint Online Management Shell"
 	}
 
 	#Check modules
@@ -30,11 +28,10 @@ function Get-Prerequisite
 	{	
 		if (Get-Module -ListAvailable -Name $module)
 		{
-			Write-Host ("Module $module found") -Fore Green
+			$availablemodules += $module
 		}
 		else
 		{
-			Write-Host ("Module $module missing") -Fore Red
 			$missingmodules += $module
 		}
 	}
@@ -42,15 +39,20 @@ function Get-Prerequisite
 	#Check Azure AD
 	if(Get-Module -ListAvailable -Name "AzureAD")
 	{
-		Write-Host ("Module AzureAD found") -Fore Green
+		$availablemodules += "AzureAD"
 	}
 	elseif(Get-Module -ListAvailable -Name "AzureADPreview"){
-		Write-Host ("Module AzureADPreview found") -Fore Green
+		$availablemodules += "AzureADPreview"
 	}
 	else {
-		Write-Host ("Module AzureAD missing") -Fore Red
 		$missingmodules += "AzureAD"
 	}
+
+		Write-Host "Found required components:" -Fore Green
+		$availablemodules | ForEach-Object{ Write-Host - "$_" -Fore Green}
+		Write-Host ""
+		Write-Host "Missing components:" -Fore Yellow
+		$missingmodules | ForEach-Object{ Write-Host - "$_" -Fore Yellow}
 
 	#If services is missing and modules
 	if ($missingmodules.count -ge 1)
@@ -127,8 +129,8 @@ function Install-Component($module)
 {
 	switch($module)
 	{
-		"Signin"{Get-SigninAssistant}
-		"Microsoft.Online.SharePoint.PowerShell"{Get-SPOPowerShell}
+		"Microsoft Online Services Sign-in Assistant for IT Professionals RTW"{Get-SigninAssistant}
+		"SharePoint Online Management Shell"{Get-SPOPowerShell}
 		default{
 			Write-Host "Installing module $module" -Fore Yellow
 			Install-Module $module -Force
