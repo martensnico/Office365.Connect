@@ -17,17 +17,33 @@ $steps = @(
 
 function RunSteps ($steps)
 {
+	[System.Collections.ArrayList]$stepstrue = @()
 	Clear-Host
 	printlogo
 
-	if ($steps[0][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-AAD}
-	if ($steps[1][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-MSOL}
-	if ($steps[2][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-SPO}
-	if ($steps[3][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-EXO}
-	if ($steps[4][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-S4B}
-	if ($steps[5][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-MSTeams}
-	if ($steps[6][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-SandC}
-	if ($steps[7][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-PNP}
+	if ($steps[0][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-AAD; $stepstrue += $steps[0][1]}
+	if ($steps[1][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-MSOL; $stepstrue += $steps[1][1]}
+	if ($steps[2][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-SPO; $stepstrue += $steps[2][1]}
+	if ($steps[3][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-EXO; $stepstrue += $steps[3][1]}
+	if ($steps[4][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-S4B; $stepstrue += $steps[4][1]}
+	if ($steps[5][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-MSTeams; $stepstrue += $steps[5][1]}
+	if ($steps[6][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-SandC; $stepstrue += $steps[6][1]}
+	if ($steps[7][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-PNP; $stepstrue += $steps[7][1]}
+	
+	Write-Host ""
+	Write-Host "The following services have been connected:"
+	$stepstrue | Foreach-Object {Write-Host "- $_"}
+
+	$title = "Connections done"
+	$message = "Do you want to exit the menu and start working?"
+	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
+	$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
+	$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
+	$choice = $host.UI.PromptForChoice($title,$message,$options,0)
+	if($choice -eq 0)
+	{
+	exit
+	}
 }
 
 function WaitAnyKey

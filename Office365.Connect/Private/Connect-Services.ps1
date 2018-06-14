@@ -44,14 +44,20 @@ function Connect-SPO
 	{
 		Write-Host ("Connecting SharePoint Online") -Fore Yellow
 		try {
-			Connect-SPOService -URL "https://$($Tenant)-admin.sharepoint.com" -Credential $credential
+			Connect-SPOService -URL "https://$($Tenant)-admin.sharepoint.com" -Credential $credential -ErrorVariable SPOError
 			Write-Host "Successfully connected to SharePoint Online" -Fore Green
 		}
 		catch { 
-		Write-Host ("Could not connect to SharePoint Online.") -Fore Red 
-		Write-Host ("Make sure your Credential name matches your Office 365 tenant name.") -Fore Red
-		Write-Host ("For instance: if credential name = contoso, the cmdlet will use https://contoso-admin.sharepoint.com as URL parameter") -Fore Red
-		WaitAnyKey
+			if($SPOError[0].Message -eq "The remote server returned an error: (403) Forbidden." -or $SPOError[0].Message -eq "The remote server returned an error: (401) Unauthorized."){Write-Host "The current user: $($credential.username) is not a SharePoint Online Administrator" -Fore Red; WaitAnyKey; exit}
+			elseif($SPOError[0].Message -eq "The sign-in name or password does not match one in the Microsoft account system."){Write-Host "The sign-in name or password does not match one in the Microsoft account system." -Fore Red; WaitAnyKey; exit}
+			else {
+				Write-Host ("Could not connect to SharePoint Online.") -Fore Red 
+				Write-Host ("Make sure your Credential name matches your Office 365 tenant name.") -Fore Red
+				Write-Host ("For instance: if credential name = contoso, the cmdlet will use https://contoso-admin.sharepoint.com as URL parameter") -Fore Red
+				WaitAnyKey
+				exit
+			}
+
 		}
 	}
 }
