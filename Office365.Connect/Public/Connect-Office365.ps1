@@ -50,8 +50,8 @@ When you use this switch parameter, you will be prompted for credentials when lo
 		Write-Host ("Select option (q to quit, c to clear selections, Enter to run.):")
 		Write-Host ("")
 		Write-Host ("Using account: $($credential.UserName)") -Fore "Yellow"
+		
 		$userInput = [System.Console]::ReadKey()
-
 		switch ($userInput.key)
 		{
 			q { $continue = $false }
@@ -64,7 +64,7 @@ When you use this switch parameter, you will be prompted for credentials when lo
 
 function checkContinue{
 	$title = "Connections done"
-	$message = "Do you want to exit the menu and start working?"
+	$message = "Do you want to exit the menu and start working?`nYes - Exit the script and start working.`nNo - you will be redirected to the menu"
 	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
 	$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
 	$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
