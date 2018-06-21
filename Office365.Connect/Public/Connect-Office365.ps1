@@ -56,8 +56,20 @@ When you use this switch parameter, you will be prompted for credentials when lo
 		{
 			q { $continue = $false }
 			c { ResetSteps ($steps) }
-			Enter { RunSteps ($steps) }
+			Enter { RunSteps ($steps);$choice = checkContinue;if($choice -eq 0){$continue = $false} }
 			default { SetStep $userInput.keyChar $steps }
 		}
 	}
+}
+
+function checkContinue{
+	$title = "Connections done"
+	$message = "Do you want to exit the menu and start working?"
+	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
+	$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
+	$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
+	$choice = $host.UI.PromptForChoice($title,$message,$options,0)
+
+	return $choice
+	
 }

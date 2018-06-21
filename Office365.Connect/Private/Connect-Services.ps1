@@ -46,6 +46,7 @@ function Connect-SPO
 		try {
 			Connect-SPOService -URL "https://$($Tenant)-admin.sharepoint.com" -Credential $credential -ErrorVariable SPOError
 			Write-Host "Successfully connected to SharePoint Online" -Fore Green
+			
 		}
 		catch { 
 			if($SPOError[0].Message -eq "The remote server returned an error: (403) Forbidden." -or $SPOError[0].Message -eq "The remote server returned an error: (401) Unauthorized."){Write-Host "The current user: $($credential.username) is not a SharePoint Online Administrator" -Fore Red; WaitAnyKey; exit}

@@ -30,23 +30,12 @@ function RunSteps ($steps)
 	if ($steps[6][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-SandC; $stepstrue += $steps[6][1]}
 	if ($steps[7][0] -eq 1 -or $steps[8][0] -eq 1) {Connect-PNP; $stepstrue += $steps[7][1]}
 	
+	if($stepstrue -ge 1)
+	{
 	Write-Host ""
 	Write-Host "The following services have been connected:"
 	$stepstrue | Foreach-Object {Write-Host "- $_"}
-	WaitAnyKey
-
-	<#
-	$title = "Connections done"
-	$message = "Do you want to exit the menu and start working?"
-	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
-	$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
-	$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
-	$choice = $host.UI.PromptForChoice($title,$message,$options,0)
-	if($choice -eq 0)
-	{
-	$continue = $false
 	}
-	#>
 }
 
 function WaitAnyKey
