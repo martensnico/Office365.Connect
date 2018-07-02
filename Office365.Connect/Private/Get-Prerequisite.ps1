@@ -114,7 +114,8 @@ function Get-SPOPowerShell
 	if(Get-CurrentPrivilege -eq $true)
 	{
 	Write-Host("Downloading SharePoint Online Management Shell") -Fore Yellow
-	$URL = "https://download.microsoft.com/download/0/2/E/02E7E5BA-2190-44A8-B407-BC73CA0D6B87/SharePointOnlineManagementShell_7723-1200_x64_en-us.msi"
+	$URL = "https://download.microsoft.com/download/0/2/E/02E7E5BA-2190-44A8-B407-BC73CA0D6B87/SharePointOnlineManagementShell_7813-1200_x64_en-us.msi"
+	        
 	$Filename = $URL.Split('/')[-1]
 	Invoke-WebRequest -Uri $URL -UseBasicParsing -OutFile "$env:TEMP\$Filename" 
 

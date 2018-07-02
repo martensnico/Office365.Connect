@@ -1,6 +1,5 @@
-function Connect-Office365
-{
-<#
+function Connect-Office365 {
+    <#
 .SYNOPSIS
 Connect to Office 365 PowerShell using credentials stored in Credential Manager (Windows Generic Credentials).
 .DESCRIPTION
@@ -26,50 +25,48 @@ Should be used if MFA is enabled for your account.
 When you use this switch parameter, you will be prompted for credentials when logging in to a service.
 #>
     [cmdletbinding()]
-	param(
-		[Parameter(Mandatory = $true)]
-		[string]$Tenant,
-		[Parameter(Mandatory = $false)]
-		[switch]$MFA
-	)
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Tenant,
+        [Parameter(Mandatory = $false)]
+        [switch]$MFA
+    )
 
-	Clear-Host
-	Get-Prerequisite 
-	$credential = Get-ManagedCredential $Tenant
-	#Need to do this because of "feature" explained here: https://github.com/Azure/azure-docs-powershell-azuread/issues/169
-	$Credential.password.MakeReadOnly()
-	$continue = $true
-	$steps = InitializeSteps
+    Clear-Host
+    Get-Prerequisite 
+    $credential = (Get-ManagedCredential $Tenant)[-1]
+  
+    #Need to do this because of "feature" explained here: https://github.com/Azure/azure-docs-powershell-azuread/issues/169
+    $credential.password.MakeReadOnly()
+    $continue = $true
+    $steps = InitializeSteps
 
-	while ($continue) {
+    while ($continue) {
 
-		ShowMenu $steps
+        ShowMenu $steps
 
-		Write-Host ("")
-		Write-Host "If you are done connecting to the different services, hit `"q`"" -Fore 	Green
-		Write-Host ("Select option (q to quit, c to clear selections, Enter to run.):")
-		Write-Host ("")
-		Write-Host ("Using account: $($credential.UserName)") -Fore "Yellow"
+        Write-Host ("")
+        Write-Host ("Select option (q to quit, c to clear selections, Enter to run.):")
+        Write-Host ("")
+        Write-Host ("Using account: $($credential.username)") -Fore "Yellow"
 		
-		$userInput = [System.Console]::ReadKey()
-		switch ($userInput.key)
-		{
-			q { $continue = $false }
-			c { ResetSteps ($steps) }
-			Enter { RunSteps ($steps);$choice = checkContinue;if($choice -eq 0){$continue = $false} }
-			default { SetStep $userInput.keyChar $steps }
-		}
-	}
+        $userInput = [System.Console]::ReadKey()
+        switch ($userInput.key) {
+            q { $continue = $false }
+            c { ResetSteps ($steps) }
+            Enter { RunSteps ($steps); $choice = checkContinue; if ($choice -eq 0) {$continue = $false} }
+            default { SetStep $userInput.keyChar $steps }
+        }
+    }
 }
 
-function checkContinue{
-	$title = "Connections done"
-	$message = "Do you want to exit the menu and start working?`nYes - Exit the script and start working.`nNo - you will be redirected to the menu"
-	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
-	$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
-	$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
-	$choice = $host.UI.PromptForChoice($title,$message,$options,0)
+function checkContinue {
+    $title = "Connections done"
+    $message = "Do you want to exit the menu and start working?`nYes - Exit the script and start working.`nNo - you will be redirected to the menu"
+    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
+    $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
+    $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
+    $choice = $host.UI.PromptForChoice($title, $message, $options, 0)
 
-	return $choice
-	
+    return $choice
 }
