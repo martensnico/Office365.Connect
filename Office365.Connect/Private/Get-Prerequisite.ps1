@@ -74,10 +74,11 @@ function Get-Prerequisite
 				}
 				Write-Host ""
 				Write-Host "We had to install some modules that require PowerShell to restart." -Fore Yellow
-				Write-Host "Please restart PowerShell and run Connect-Office365 again" -Fore Yellow
-				WaitAnyKey
+				
+				do{$value = read-host "Press `"Y`" to exit the console"}
+				while($value -ne "Y")
 				exit
-			}
+    		}	
 		}
 		Clear-Host
 		Get-Prerequisite
