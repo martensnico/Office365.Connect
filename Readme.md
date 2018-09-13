@@ -9,12 +9,15 @@ This is a PowerShell Module designed for assisting being able to work with Offic
 Install-Module Office365.Connect
 
 *Use - No MFA*
+
 Connect-Office365 -Tenant "Contoso"
 
 *Use - MFA*
+
 Connect-Office365 -Tenant "Fabrikam" -MFA
 
 *Parameters*
+
 - Tenant: Use the tenant name (xxx.sharepoint.com)
 - MFA: Switch, if added, will prompt for MFA.
  
