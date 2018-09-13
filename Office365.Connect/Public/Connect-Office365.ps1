@@ -45,14 +45,33 @@ When you use this switch parameter, you will be prompted for credentials when lo
 
         ShowMenu $steps
 
-        Write-Host ("")
-        Write-Host ("Select option (q to quit, c to clear selections, Enter to run.):")
-        Write-Host ("")
+        Write-Host (" ________________________________________")
+        Write-Host ("|                                        |")
+        Write-Host ("|    Enter - Run selections              |")
+        Write-Host ("|    C - Clear selections                |")
+        Write-Host ("|    Q - Quit                            |")
+        Write-Host ("|                                        |")
+  
+        if (Get-CurrentPrivilege -eq $true){
+        Write-Host ("|    U - Update modules                  |")
+        }
+        else
+        {
+        Write-Host ("|") -NoNewline
+        Write-Host ("    U - Update modules *                ") -Fore Yellow -NoNewline
+        Write-Host ("|")
+        Write-Host ("|") -NoNewline
+        Write-Host ("    Requires running as Administrator   ") -Fore Yellow -NoNewline
+        Write-Host ("|")
+        }  
+        Write-Host ("|________________________________________|")   
+        Write-Host ("")  
         Write-Host ("Using account: $($credential.username)") -Fore "Yellow"
 		
         $userInput = [System.Console]::ReadKey()
         switch ($userInput.key) {
             q { $continue = $false }
+            u { if (Get-CurrentPrivilege -eq $true){Get-ModuleUpdate}}
             c { ResetSteps ($steps) }
             Enter { RunSteps ($steps); $choice = checkContinue; if ($choice -eq 0) {$continue = $false} }
             default { SetStep $userInput.keyChar $steps }
