@@ -17,3 +17,4 @@ Connect-Office365 -Tenant "Fabrikam" -MFA
 *Parameters*
 - Tenant: Use the tenant name (xxx.sharepoint.com)
 - MFA: Switch, if added, will prompt for MFA.
+ 
