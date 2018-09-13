@@ -8,12 +8,11 @@ function Get-ModuleUpdate {
     $duplicates = ($modules | Group-Object name -NoElement | Where-Object count -gt 1).Name
     if($duplicates.count -ge 1)
     {
-        Write-Host "$"
+
     #Go through all duplicates
     foreach($duplicate in $duplicates)
     {
-    #Remove old versions  
-        
+    #Remove old versions         
         $duplicatemodules = Get-InstalledModule $duplicate -AllVersions
 
         foreach($duplicatemodule in $duplicatemodules)
@@ -32,7 +31,7 @@ else {
 }
     #declare array
     $myarray = @()
-
+    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline"
     Write-Host "Comparing modules to online versions, this can take a minute" -ForegroundColor Yellow
     foreach ($module in $modules) {
         Write-Host "." -NoNewline
