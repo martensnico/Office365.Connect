@@ -1,6 +1,6 @@
 function Get-Prerequisite
 {
-	$modules = "CredentialManager","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline"
+	$modules = "CredentialManager","MicrosoftTeams","MSOnline","SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
 	[System.Collections.ArrayList]$missingmodules = @()
 	[System.Collections.ArrayList]$availablemodules = @()
 	#Microsoft Online Services Sign-in Assistant for IT Professionals RTW
@@ -13,17 +13,7 @@ function Get-Prerequisite
 		$missingmodules += "Microsoft Online Services Sign-in Assistant for IT Professionals RTW"
 	}
 
-	#SharePoint Online Management Shell
-	if ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") | Where-Object { $_.GetValue("DisplayName") -like "SharePoint Online Management Shell" })
-	{
-		$availablemodules += "SharePoint Online Management Shell"
-	}
-	else
-	{
-		$missingmodules += "SharePoint Online Management Shell"
-	}
-
-	#Check modules
+		#Check modules
 	foreach ($module in $modules)
 	{	
 		if (Get-Module -ListAvailable -Name $module)
@@ -96,7 +86,6 @@ function Get-Prerequisite
 function Get-CurrentPrivilege
 {
 	$privilege = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")
-	#if($privilege -eq $false){Write-Host ("Please start PowerShell as administrator to install/update modules") -Fore Red;Write-Host ("The console will now exit so you can start it as an administrator") -Fore Red; WaitAnyKey; exit}
 	return $privilege
 }
 
@@ -122,35 +111,11 @@ function Get-SigninAssistant
 	}
 }
 
-function Get-SPOPowerShell
-{
-	if(Get-CurrentPrivilege -eq $true)
-	{
-	Write-Host("Downloading SharePoint Online Management Shell") -Fore Yellow
-	$URL = "https://download.microsoft.com/download/0/2/E/02E7E5BA-2190-44A8-B407-BC73CA0D6B87/SharePointOnlineManagementShell_8029-1200_x64_en-us.msi"
-	        
-	$Filename = $URL.Split('/')[-1]
-	Invoke-WebRequest -Uri $URL -UseBasicParsing -OutFile "$env:TEMP\$Filename" 
-
-	Write-Host("Installing SharePoint Online Management Shell") -Fore Yellow
-	& $env:TEMP\$Filename /qn
-	Write-Host("SharePoint Online Management Shell has been installed") -Fore Green
-	Start-Sleep -Seconds 3
-	}
-	else {
-		Write-Host ("Please start PowerShell as administrator to install/update modules") -Fore Red
-		Write-Host ("The console will now exit so you can start it as an administrator") -Fore Red
-		WaitAnyKey
-		exit
-	}
-}
-
 function Install-Component($module)
 {
 	switch($module)
 	{
 		"Microsoft Online Services Sign-in Assistant for IT Professionals RTW"{Get-SigninAssistant}
-		"SharePoint Online Management Shell"{Get-SPOPowerShell}
 		default{
 			Write-Host "Installing module $module" -Fore Yellow
 			Install-Module $module -Force

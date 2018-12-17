@@ -2,19 +2,20 @@
 function Get-ModuleUpdate {
     cls
     Write-Host "Starting the Update Module process.." -ForegroundColor Green
-    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline"
+    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
 
     #Get duplicate modules
     $duplicates = ($modules | Group-Object name -NoElement | Where-Object count -gt 1).Name
     if($duplicates.count -ge 1)
     {
+        Write-Host "Duplicate modules found, deinstalling these first" -ForegroundColor Yellow
 
     #Go through all duplicates
     foreach($duplicate in $duplicates)
     {
     #Remove old versions         
         $duplicatemodules = Get-InstalledModule $duplicate -AllVersions
-
+      
         foreach($duplicatemodule in $duplicatemodules)
         {
         $latest = get-installedmodule $duplicatemodule.Name
