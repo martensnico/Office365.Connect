@@ -61,13 +61,7 @@ function Get-Prerequisite
 				foreach ($module in $missingmodules)
 				{
 						Install-Component $module				
-				}
-				Write-Host ""
-				Write-Host "We had to install some modules that require PowerShell to restart." -Fore Yellow
-				
-				do{$value = read-host "Press `"Y`" to exit the console"}
-				while($value -ne "Y")
-				exit
+				}				
 			}	
 			else {
 				Write-Host ("Please start PowerShell as administrator to install/update modules") -Fore Red;
