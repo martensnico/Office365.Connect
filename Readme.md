@@ -13,7 +13,7 @@ Credentials are securely stored in the Windows Credential Manager. This way you 
 ## Installation
 - Install-Module Office365.Connect
 
-##Preview
+## Preview
 ![](Connect-Office365.gif)
 
  
