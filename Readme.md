@@ -14,10 +14,10 @@ Credentials are securely stored in the Windows Credential Manager. This way you 
 - Install-Module Office365.Connect
 
 ##Preview
-![ScreenRecording]
+![ScreenRecording](Office365.Connect.gif)
 
  
 ## Disclaimer
 > THIS CODE IS PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
-[ScreenRecording] ./Connect-Office365.gif
+
