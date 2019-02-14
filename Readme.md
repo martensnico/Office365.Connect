@@ -14,7 +14,7 @@ Credentials are securely stored in the Windows Credential Manager. This way you 
 - Install-Module Office365.Connect
 
 ##Preview
-![ScreenRecording](Office365.Connect.gif)
+![](Connect-Office365.gif)
 
  
 ## Disclaimer
