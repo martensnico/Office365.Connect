@@ -67,11 +67,27 @@ function Connect-EXO
 {
 	if ($MFA)
 	{
-	Write-Host("Sorry, Exchange Online requires a separate module with MFA, which cannot be installed for you.") -Fore Yellow
-	Write-Host("Find more about how to install it here:") -Fore Yellow
-	Write-Host("")
-	Write-Host("https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/connect-to-exchange-online-powershell/mfa-connect-to-exchange-online-powershell?view=exchange-ps") -Fore Yellow
-	WaitAnyKey
+		if([bool](Get-Command -Name "Connect-EXOPSSession" -ErrorAction SilentlyContinue) -eq $true)
+		{
+			try{
+				Write-Host "Connecting to Exchange Online using MFA" -ForegroundColor Yellow
+			Connect-EXOPSSession -UserPrincipalName $credential.username
+			Write-Host "Successfully connected to Exchange Online" -Fore Green}
+			catch{
+				Write-Host ("Could not connect to Exchange Online.") -Fore Red 
+				Write-Host ("Make sure your Credential name matches your Office 365 tenant name.") -Fore Red
+				Write-Host ("For instance: if credential name = contoso, the cmdlet will use https://contoso-admin.sharepoint.com as URL parameter") -Fore Red
+				WaitAnyKey
+				exit
+			}
+		}
+		else{
+			Write-Host("Sorry, Exchange Online requires a separate module with MFA, which cannot be installed for you.") -Fore Yellow
+			Write-Host("Find more about how to install it here:") -Fore Yellow
+			Write-Host("")
+			Write-Host("https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/connect-to-exchange-online-powershell/mfa-connect-to-exchange-online-powershell?view=exchange-ps") -Fore Yellow
+			WaitAnyKey
+		}
 	}
 	if (!$MFA)
 	{

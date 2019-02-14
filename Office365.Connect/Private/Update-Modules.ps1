@@ -32,7 +32,7 @@ else {
 }
     #declare array
     $myarray = @()
-    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline"
+    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
     Write-Host "Comparing modules to online versions, this can take a minute" -ForegroundColor Yellow
     foreach ($module in $modules) {
         Write-Host "." -NoNewline
