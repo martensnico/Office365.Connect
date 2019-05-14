@@ -29,15 +29,15 @@ function Get-ManagedCredential ($Tenant)
 function New-ManagedCredential ($credentialname)
 {
 
-do{$newcredential = Get-Credential -Message "Password please"}
+do{$newcredential = Get-Credential -Message "Enter a username / password for your tenant, so we can use this the next time you connect to your tenant automatically!"}
 until($newcredential)
 
 New-StoredCredential -Target $credentialname -Credentials $newcredential -Type "Generic" -Persist "Enterprise"
 }
 
 function checkCreateCredentials{
-	$title = "Credential $creds not found"
-	$message = "It looks like credential $creds hasn't been added to the Credential Manager, do you want to create it now?`nYes - Creates a new generic credential.`nNo - Enter a new credential name"
+	$title = "Credential for tenant: $Tenant not found"
+	$message = "It looks like this is the first time you are connecting to tenant: $Tenant. do you want to save your credentials for this tenant?`n`nYes - Creates a new generic credential for this tenant.`nNo - If you made a typo and want to retype your tenant name`n "
 	$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes"
 	$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No"
 	$options = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
