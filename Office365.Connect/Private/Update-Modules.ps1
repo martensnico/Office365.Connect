@@ -4,38 +4,17 @@ function Get-ModuleUpdate {
     Write-Host "Starting the Update Module process.." -ForegroundColor Green
     $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
 
-    #Get duplicate modules
-    $duplicates = ($modules | Group-Object name -NoElement | Where-Object count -gt 1).Name
-    if($duplicates.count -ge 1)
-    {
-        Write-Host "Duplicate modules found, deinstalling these first" -ForegroundColor Yellow
-
-    #Go through all duplicates
-    foreach($duplicate in $duplicates)
-    {
-    #Remove old versions         
-        $duplicatemodules = Get-InstalledModule $duplicate -AllVersions
-      
-        foreach($duplicatemodule in $duplicatemodules)
-        {
-        $latest = get-installedmodule $duplicatemodule.Name
-        if($duplicatemodule.version -ne $latest.version)
-        {           
-            Write-Host "Uninstalling module $($duplicatemodule.Name) with version $($duplicatemodule.version)"
-            Uninstall-Module $duplicatemodule -force
-        }
-    }
-    }
-}
-else {
-    Write-Host "No duplicate modules found" -ForegroundColor Green
-}
     #declare array
     $myarray = @()
     $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
     Write-Host "Comparing modules to online versions, this can take a minute" -ForegroundColor Yellow
+   
+    $i = 1
+    $activity = "Checking modules against PowerShell Gallery"
+
     foreach ($module in $modules) {
-        Write-Host "." -NoNewline
+        
+        Write-Progress -Activity $activity -Status "Checking module $($i.ToString().PadLeft($modules.Count.ToString().Length)) of $($modules.Count)" -CurrentOperation "Checking module $($module)" -PercentComplete ($i / $modules.count * 100)
         #find the current version in the gallery
         Try {
             $online = Find-Module -Name $module.name -Repository PSGallery -ErrorAction Stop
@@ -59,8 +38,9 @@ else {
         Add-Member -InputObject $myobj -MemberType 'NoteProperty' -Name 'Update Available' -Value $UpdateAvailable
         $myarray += $myobj
         Clear-Variable myobj
+        $i++
     }
-
+    Write-Progress -Activity $activity -Status "Ready" -Completed	
     #all modules
     $myarray | Sort-Object Name | Format-Table *
 
@@ -90,14 +70,49 @@ else
 
 function Update-Modules {
     if (Get-CurrentPrivilege -eq $true) {
+        
+        $i = 1
+        $activity = "Downloading modules from PowerShell Gallery"
+
         foreach ($module in $needupdatemodules) {
-            Write-Host Updating module $module."Module Name"
+            Write-Progress -Activity $activity -Status "Downloading module $($i.ToString().PadLeft($needupdatemodules.Count.ToString().Length)) of $($needupdatemodules.Count)" -CurrentOperation "Downloading module $($module)" -PercentComplete ($i / $needupdatemodules.count * 100)
             Update-Module $module."Module Name" -Force
+            $i++
         }
+        Write-Progress -Activity $activity -Status "Ready" -Completed	
     }
     else {
             Write-Host ("Please start PowerShell as administrator to install/update modules") -Fore Red;
             Write-Host ("The console will now exit so you can start it as an administrator") -Fore Red; 
             WaitAnyKey; exit 
         }
+}
+
+function Get-DuplicateModules
+{
+cls
+Write-Host "Starting the Remove duplicate Module process.." -ForegroundColor Green
+$mods = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
+ 
+$i = 1
+$activity = "Checking duplicate modules"
+
+foreach ($Mod in $mods)
+{
+    
+  Write-Progress -Activity $activity -Status "Checking module $i of $($mods.Count)" -CurrentOperation "Checking module $($mod.Name)" -PercentComplete ($i / $mods.count * 100)
+  $latest = get-installedmodule $mod.Name
+  $specificmods = get-installedmodule $mod.Name -allversions
+  
+  foreach ($sm in $specificmods)
+  {
+    if ($sm.version -ne $latest.version)
+	{
+	  $sm | uninstall-module -force
+	}
+	
+  }
+  $i++
+}
+Write-Progress -Activity $activity -Status "Ready" -Completed
 }

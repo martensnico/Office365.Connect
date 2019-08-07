@@ -54,14 +54,19 @@ When you use this switch parameter, you will be prompted for credentials when lo
   
         if (Get-CurrentPrivilege -eq $true){
         Write-Host ("|    U - Update modules                  |")
+        Write-Host ("|    R - Remove old versions of modules  |")
         }
         else
         {
         Write-Host ("|") -NoNewline
         Write-Host ("    U - Update modules *                ") -Fore Yellow -NoNewline
-        Write-Host ("|")
+        Write-Host ("|") 
         Write-Host ("|") -NoNewline
-        Write-Host ("    Requires running as Administrator   ") -Fore Yellow -NoNewline
+        Write-Host ("    R - Remove old versions of modules *") -Fore Yellow -NoNewline
+        Write-Host ("|") 
+        Write-Host ("|                                        |")
+        Write-Host ("|") -NoNewline
+        Write-Host ("  * Requires running as Administrator   ") -Fore Yellow -NoNewline
         Write-Host ("|")
         }  
         Write-Host ("|________________________________________|")   
@@ -72,6 +77,7 @@ When you use this switch parameter, you will be prompted for credentials when lo
         switch ($userInput.key) {
             q { $continue = $false }
             u { if (Get-CurrentPrivilege -eq $true){Get-ModuleUpdate}}
+            r { if (Get-CurrentPrivilege -eq $true){Get-DuplicateModules}}
             c { ResetSteps ($steps) }
             Enter { RunSteps ($steps); $choice = checkContinue; if ($choice -eq 0) {$continue = $false} }
             default { SetStep $userInput.keyChar $steps }
