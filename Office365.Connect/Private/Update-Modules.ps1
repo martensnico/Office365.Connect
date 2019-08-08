@@ -2,11 +2,10 @@
 function Get-ModuleUpdate {
     cls
     Write-Host "Starting the Update Module process.." -ForegroundColor Green
-    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
-
+ 
     #declare array
     $myarray = @()
-    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
+    $modules = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell", "Office365.Connect"
     Write-Host "Comparing modules to online versions, this can take a minute" -ForegroundColor Yellow
    
     $i = 1
@@ -80,6 +79,7 @@ function Update-Modules {
             $i++
         }
         Write-Progress -Activity $activity -Status "Ready" -Completed	
+        WaitAnyKey
     }
     else {
             Write-Host ("Please start PowerShell as administrator to install/update modules") -Fore Red;
@@ -92,7 +92,7 @@ function Get-DuplicateModules
 {
 cls
 Write-Host "Starting the Remove duplicate Module process.." -ForegroundColor Green
-$mods = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell"
+$mods = Get-Module -ListAvailable -Name "CredentialManager", "MicrosoftTeams", "MSOnline", "SharePointPnPPowerShellOnline","Microsoft.Online.SharePoint.PowerShell", "Office365.Connect"
  
 $i = 1
 $activity = "Checking duplicate modules"

@@ -41,9 +41,10 @@ When you use this switch parameter, you will be prompted for credentials when lo
     $continue = $true
     $steps = InitializeSteps
 
-    while ($continue) {
+	while ($continue) {
 
         ShowMenu $steps
+        
 
         Write-Host (" ________________________________________")
         Write-Host ("|                                        |")

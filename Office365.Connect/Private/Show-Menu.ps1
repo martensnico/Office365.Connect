@@ -46,7 +46,6 @@ function printlogo
 	Write-Output ("\     \___(  <_> )   |  \   |  \  ___/\  \___|  |   /    |    \  |   |  |  |  \  \__\  ___/ /       \  |__\  \/       \")
 	Write-Output ("\______  /\____/|___|  /___|  /\___  >\___  >__|   \_______  /__|   |__|  |__|\___  >___  >______  /\_____  /______  /")
 	Write-Output ("       \/            \/     \/     \/     \/               \/                     \/    \/       \/       \/       \/ ")
-	Write-Output ("")
 }
 
 function ResetSteps ($steps)
@@ -77,8 +76,12 @@ function SetStep ($selection,$steps)
 
 function ShowMenu ($steps)
 {
+	#Check version info
+	$currentversion = (Get-Module Office365.Connect).Version.tostring()
+	$containsversion = (Invoke-RestMethod https://www.powershellgallery.com/packages/Office365.Connect).Contains($currentversion)
 	Clear-Host
 	printlogo
+	PrintVersion $currentversion $containsversion
 	$i = 1
 	
 	foreach ($step in $steps) {
@@ -86,3 +89,13 @@ function ShowMenu ($steps)
 		$i++
 	}
 }
+
+function PrintVersion ($currentversion,$containsversion)
+{
+Write-Output ("")
+	if($containsversion -eq $true){Write-Output ("** RUNNING LATEST VERSION: $($currentversion) **")}
+	else{Write-OutPut ("Update Available!")
+	}
+	Write-Output ("")
+}
+

@@ -14,10 +14,16 @@ function Connect-AAD {
     if (!$MFA) {
         Write-Host ("Connecting Azure Active Directory") -Fore Yellow
         try {
-            Connect-AzureAD -Credential $credential | Out-Null
+            Connect-AzureAD -Credential $credential -ErrorVariable AzureADError | Out-Null
             Write-Host ("Successfully connected to Azure Active Directory") -Fore Green
         }
-        catch { Write-Host ("Could not connect to Azure Active Directory") }
+        catch { 
+                cls
+                Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow
+                Write-Host ""
+                $mfa = $true
+                Connect-AAD            
+        }
     }
 }
 
@@ -44,7 +50,10 @@ function Connect-SPO {
         }
         catch { 
             if ($SPOError[0].Message -eq "The remote server returned an error: (403) Forbidden." -or $SPOError[0].Message -eq "The remote server returned an error: (401) Unauthorized.") {Write-Host "The current user: $($credential.username) is not a SharePoint Online Administrator" -Fore Red; WaitAnyKey; exit}
-            elseif ($SPOError[0].Message -eq "The sign-in name or password does not match one in the Microsoft account system.") {Write-Host "The sign-in name or password does not match one in the Microsoft account system." -Fore Red; WaitAnyKey; exit}
+            elseif ($SPOError[0].Message -eq "The sign-in name or password does not match one in the Microsoft account system.") {cls;Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow; 
+        $mfa = $true
+        Connect-SPO
+        }
             else {
                 Write-Host ("Could not connect to SharePoint Online.") -Fore Red 
                 Write-Host ("Make sure your Credential name matches your Office 365 tenant name.") -Fore Red
@@ -103,7 +112,13 @@ function Connect-EXO {
             Write-Host ("Successfully connected to Exchange online") -Fore Green
             WaitAnyKey
         }
-        catch { Write-Host ("Could not connect to Exchange Online with MFA") -Fore Red; WaitAnyKey }
+        catch { 
+            cls
+            Write-Host ("Could not connect to Exchange Online") -Fore Red; 
+        Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow;
+        $mfa = $true
+        Connect-EXO
+    }
     }
 }
 
@@ -132,7 +147,11 @@ function Connect-S4B {
                 Write-Host ("Successfully connected to Skype for Business Online") -Fore Green
             }
             catch { 
+                cls
                 Write-Host ("Could not connect to Skype for Business Online") -Fore Red
+                Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow;
+                $mfa = $true
+                Connect-S4B
             }
         }
     }
@@ -158,17 +177,51 @@ function Connect-MSTeams {
             Connect-MicrosoftTeams -Credential $credential | Out-Null
             Write-Host ("Successfully connected to Microsoft Teams") -Fore Green
         }
-        catch { Write-Host ("Could not connect to Microsoft Teams") -Fore Red }
+        catch { 
+            cls
+            Write-Host (Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow)
+        $mfa = $true
+        Connect-MSTeams
+        }
     }
 }
 
 function Connect-SandC {
     if ($MFA) {
-        Write-Host("Sorry, Security & Compliance Center requires a separate module with MFA, which cannot be installed for you.") -Fore Yellow
-        Write-Host("Find more about how to install it here:") -Fore Yellow
-        Write-Host("")
-        Write-Host("https://docs.microsoft.com/en-us/powershell/exchange/office-365-scc/connect-to-scc-powershell/mfa-connect-to-scc-powershell?view=exchange-ps") -Fore Yellow
-        WaitAnyKey
+        if ([bool](Get-Command -Name "Connect-IPPSSession" -ErrorAction SilentlyContinue) -eq $true) {
+            try {
+                Write-Host "Connecting to Security and Compliance using MFA" -ForegroundColor Yellow
+                Connect-IPPSSession -UserPrincipalName $credential.username
+                Write-Host "Successfully connected to Security and Compliance" -Fore Green
+            }
+            catch {
+                Write-Host ("Could not connect to Security and Compliance.") -Fore Red 
+                Write-Host ("Make sure your Credential name matches your Office 365 tenant name.") -Fore Red
+                Write-Host ("For instance: if credential name = contoso, the cmdlet will use https://contoso-admin.sharepoint.com as URL parameter") -Fore Red
+                WaitAnyKey
+                exit
+            }
+        }
+        else {
+            try {
+                $PSExoPowershellModuleRoot = (Get-ChildItem -Path $env:userprofile -Filter CreateExoPSSession.ps1 -Recurse -ErrorAction SilentlyContinue -Force | Select -Last 1).DirectoryName
+                $ExoPowershellModule = "Microsoft.Exchange.Management.ExoPowershellModule.dll";
+                $ModulePath = [System.IO.Path]::Combine($PSExoPowershellModuleRoot, $ExoPowershellModule);
+
+				Import-Module $ModulePath -Global;
+				. "$PSExoPowershellModuleRoot\CreateExoPSSession.ps1"
+                Write-Host "Connecting to Security and Compliance using MFA" -ForegroundColor Yellow
+				Import-Module (Connect-IPPSSession -UserPrincipalName $credential.username) -Global | Out-Null               
+                Write-Host "Successfully connected to Security and Compliance" -Fore Green
+            }
+            catch {
+                Write-Host("Sorry, Security and Compliance requires a separate module with MFA, which cannot be installed for you.") -Fore Yellow
+                Write-Host("Find more about how to install it here:") -Fore Yellow
+                Write-Host("")
+                Write-Host("https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/connect-to-exchange-online-powershell/mfa-connect-to-exchange-online-powershell?view=exchange-ps") -Fore Yellow
+                WaitAnyKey
+            }
+        }
     }
     if (!$MFA) {
         Write-Host ("Connecting Security & Compliance Center") -Fore Yellow
@@ -177,7 +230,12 @@ function Connect-SandC {
             Import-PSSession $SccSession -Prefix cc
             Write-Host ("Successfully connected to Security & Compliance Center") -Fore Green
         }
-        catch { Write-Host ("Could not connect to Security & Compliance Center") -Fore Red }
+        catch { 
+            cls
+            Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow;
+            $mfa = $true
+            Connect-SandC
+             }
     }
 }
 
@@ -200,7 +258,13 @@ function Connect-PNP {
             Connect-PnPOnline -URL $result -Credentials $credential
             Write-Host ("Successfully connected to PNP Online") -Fore Green
         }
-        catch { Write-Host ("Could not connect to PNP Online, try again.") -Fore Red; WaitAnyKey }
+        catch { 
+            cls
+            Write-Host ("Could not connect to Exchange Online") -Fore Red; 
+        Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow;
+        $mfa = $true
+        Connect-PNPOnline -Url $result -UseWebLogin
+        }
     }
 }
 
@@ -217,11 +281,22 @@ function Connect-MSOL {
         catch { Write-Host ("Could not connect to Microsoft Online") -Fore Red }
     }
     if (!$MFA) {
-        Write-Host ("Connecting Microsoft Online") -Fore Yellow
+        Write-Host ("Connecting Microsoft Online. MFA will be detected automatically") -Fore Yellow
         try {
-            Connect-MsolService -Credential $credential
-            Write-Host ("Successfully connected to Microsoft Online") -Fore Green
-        }
+            Set-Clipboard $credential.userName
+            Write-Host ("Your username was copied to your clipboard.")
+            Write-Host ("Please hit Ctrl + V to paste your username")
+            Connect-MsolService -Credential $credential -ErrorVariable MSOLError
+            if(!($MSOLERROR)){Write-Host ("Successfully connected to Microsoft Online") -Fore Green}
+            else{
+                cls
+                Write-Host "It seems like the password does not match or MFA is enabled. Trying to connect with MFA" -Fore Yellow
+                Write-Host ""
+                $mfa = $true
+                Connect-MSOL
+            }
+    }
+
         catch { 
             Write-Host ("Could not connect to Microsoft Online") -Fore Red 
             WaitAnyKey
