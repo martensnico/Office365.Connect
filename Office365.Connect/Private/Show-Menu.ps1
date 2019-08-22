@@ -78,7 +78,7 @@ function ShowMenu ($steps)
 {
 	#Check version info
 	$currentversion = (Get-Module Office365.Connect).Version.tostring()
-	$containsversion = (Invoke-RestMethod https://www.powershellgallery.com/packages/Office365.Connect).Contains($currentversion)
+	$containsversion = (Invoke-RestMethod https://www.powershellgallery.com/packages/Office365.Connect).Contains("<meta property=""og:title"" content=""Office365.Connect $($currentversion)"" />")
 	Clear-Host
 	printlogo
 	PrintVersion $currentversion $containsversion
@@ -94,7 +94,7 @@ function PrintVersion ($currentversion,$containsversion)
 {
 Write-Output ("")
 	if($containsversion -eq $true){Write-Output ("** RUNNING LATEST VERSION: $($currentversion) **")}
-	else{Write-OutPut ("Update Available!")
+	else{Write-OutPut ("** UPDATE AVAILABLE, HIT [U] TO UPDATE **")
 	}
 	Write-Output ("")
 }
