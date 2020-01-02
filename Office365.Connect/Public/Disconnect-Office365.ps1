@@ -26,12 +26,13 @@ Disconnects PowerShell for Skype for Business Online and Microsoft Teams
 		[switch]$Compliance,
 		[switch]$PNP
 		)
-if($AzureAD){Disconnect-AAD}
-if($SharePoint){Disconnect-SPO}
-if($Exchange){Disconnect-EXO}
-if($Skype){Disconnect-S4B}
-if($Teams){Disconnect-MSTeams}
-if($Compliance){Disconnect-SandC}
-if($PNP){Disconnect-PNP}
-if($AzureAD -eq $false -and $SharePoint -eq $false -and $Exchange -eq $false -and $Skype -eq $false -and $Teams -eq $false -and $Compliance -eq $false -and $PNP -eq $false){Disconnect-AAD;Disconnect-SPO;Disconnect-EXO;Disconnect-S4B;Disconnect-MSTeams;Disconnect-SandC;Disconnect-PNP}
+$disconnectAll = $true
+if($AzureAD){Disconnect-AAD; $disconnectAll = $false}
+if($SharePoint){Disconnect-SPO; $disconnectAll = $false}
+if($Exchange){Disconnect-EXO; $disconnectAll = $false}
+if($Skype){Disconnect-S4B; $disconnectAll = $false}
+if($Teams){Disconnect-MSTeams; $disconnectAll = $false}
+if($Compliance){Disconnect-SandC; $disconnectAll = $false}
+if($PNP){Disconnect-PNP; $disconnectAll = $false}
+if($disconnectAll){Disconnect-AAD;Disconnect-SPO;Disconnect-EXO;Disconnect-S4B;Disconnect-MSTeams;Disconnect-SandC;Disconnect-PNP}
 }
